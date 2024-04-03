@@ -5,18 +5,21 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 @LambdaHandler(lambdaName = "hello_world",
 	roleName = "hello_world-role",
 	isPublishVersion = true,
 	aliasName = "${lambdas_alias_name}",
-	methodName = "handleRequest",
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-public class HelloWorld implements RequestHandler<AwsProxyRequest, AwsProxyResponse> {
+public class HelloWorld implements RequestStreamHandler {
 	private static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
 	static {
@@ -28,7 +31,7 @@ public class HelloWorld implements RequestHandler<AwsProxyRequest, AwsProxyRespo
 	}
 
 	@Override
-	public AwsProxyResponse handleRequest(AwsProxyRequest awsProxyRequest, Context context) {
-		return handler.proxy(awsProxyRequest, context);
+	public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
+		handler.proxyStream(inputStream, outputStream, context);
 	}
 }
