@@ -5,6 +5,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.model.HttpApiV2ProxyRequest;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
@@ -12,26 +13,21 @@ import com.syndicate.deployment.model.RetentionSetting;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-@LambdaHandler(lambdaName = "hello_world",
-	roleName = "hello_world-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
-)
-public class HelloWorld implements RequestStreamHandler {
-	private static SpringBootLambdaContainerHandler<HttpApiV2ProxyRequest, AwsProxyResponse> handler;
-
-	static {
-		try{
-			handler = SpringBootLambdaContainerHandler.getHttpApiV2ProxyHandler(Application.class);
-		} catch (ContainerInitializationException ex) {
-			throw new RuntimeException("Unable to load spring boot application", ex);
-		}
-	}
-
-	@Override
-	public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-		handler.proxyStream(inputStream, outputStream, context);
+//@LambdaHandler(lambdaName = "hello_world",
+//	roleName = "hello_world-role",
+//	isPublishVersion = true,
+//	aliasName = "${lambdas_alias_name}",
+//	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+//)
+public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
+	public Map<String, Object> handleRequest(Object request, Context context) {
+		System.out.println("Hello from lambda");
+		Map<String, Object> resultMap = new LinkedHashMap<>();
+		resultMap.put("statusCode", 200);
+		resultMap.put("message", "Hello from Lambda");
+		return resultMap;
 	}
 }

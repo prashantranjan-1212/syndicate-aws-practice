@@ -4,6 +4,7 @@
       "Statement": [
         {
           "Action": [
+            "lambda:InvokeFunctionUrl",
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents",
@@ -34,5 +35,25 @@
     "allowed_accounts": [
       "${account_id}"
     ]
+  },
+  "hello_world": {
+    "name": "cmtr-d2919297-hello_world-test",
+    "runtime": "java11",
+    "iam_role_name": "hello_world-role",
+    "memory": 128,
+    "timeout": 300,
+    "func_name": "com.task02.HelloWorld",
+    "deployment_package": "task02-1.0.0.jar",
+    "url_config": {
+      "auth_type": "NONE",
+      "invoke_mode": "BUFFERED",
+      "cors": {
+        "allow_credentials": false,
+        "allow_methods": ["GET"],
+        "allow_origins": ["*"]
+      }
+    },
+    "publish_version": true,
+    "resource_type" : "lambda"
   }
 }
